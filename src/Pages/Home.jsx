@@ -3,10 +3,13 @@ import { useEffect } from 'react';
 import { getCurrency } from 'services/getCurrency';
 
 import { MainForm } from 'components/MainForm/MainForm';
+import { exchangeCurrency } from 'services/currencyExhange';
+import ExchangeResult from 'components/ExchangeResult/ExchangeResult';
 
 export const Home = () => {
   const [currency, setCurrency] = useState('USD');
   const [value, setValue] = useState('');
+  const [exchangeResult, setExchangeResult] = useState(null);
 
   useEffect(() => {
     function success(pos) {
@@ -30,6 +33,33 @@ export const Home = () => {
     navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
+  useEffect(() => {
+    if (!value) {
+      return;
+    }
+
+    const splitValue = value.split(' ');
+    const convertFrom = splitValue[1];
+    const convertTo = splitValue[3];
+    const amountToConvert = splitValue[0];
+
+    exchange();
+
+    async function exchange() {
+      try {
+        const data = await exchangeCurrency(
+          convertTo,
+          convertFrom,
+          amountToConvert
+        );
+
+        setExchangeResult(data.result);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }, [value]);
+
   const mainFormSubmit = inputValue => {
     console.log(inputValue);
     setValue(inputValue);
@@ -38,6 +68,9 @@ export const Home = () => {
     <>
       <h1>Your current currency: {currency}</h1>
       <MainForm setValue={mainFormSubmit} />
+      {exchangeResult && (
+        <ExchangeResult requestedExchange={value} result={exchangeResult} />
+      )}
     </>
   );
 };
