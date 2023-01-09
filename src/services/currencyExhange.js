@@ -23,3 +23,9 @@ export async function exchangeCurrency(to, from, amount) {
     console.log(error);
   }
 }
+export function getLatest(base) {
+  return fetch(
+    `https://api.apilayer.com/exchangerates_data/latest?symbols=USD,GBP,EUR&base=${base}`,
+    requestOptions
+  ).then(response => response.json());
+}
