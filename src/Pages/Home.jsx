@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { getCurrency } from 'services/getCurrency';
 
+import { MainForm } from 'components/MainForm/MainForm';
+
 export const Home = () => {
   const [currency, setCurrency] = useState('USD');
+  const [value, setValue] = useState('');
 
   useEffect(() => {
     function success(pos) {
@@ -27,5 +30,14 @@ export const Home = () => {
     navigator.geolocation.getCurrentPosition(success, error);
   }, []);
 
-  return <h1>Your current currency: {currency}</h1>;
+  const mainFormSubmit = inputValue => {
+    console.log(inputValue);
+    setValue(inputValue);
+  };
+  return (
+    <>
+      <h1>Your current currency: {currency}</h1>
+      <MainForm setValue={mainFormSubmit} />
+    </>
+  );
 };
